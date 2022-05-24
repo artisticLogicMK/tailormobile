@@ -1,0 +1,256 @@
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+		<meta name="description" content="TailorMobile is a digital solution for record keeping made for tailors to simplistically store and access the measurement infomation of their customers on their phones." />
+		<meta name="author" content="ArtisticLogic">
+		<meta property="og:image" content="https://tailormobile.artisticlogicmk.one/assets/img/cover.png">
+		<title>TailorMobile</title>
+		<link rel="icon" href="assets/img/icon.png">
+
+		<script src="assets/js/jquery.min.js"></script>
+		<script src="assets/js/vue.min.js"></script>
+		<script src="assets/js/moment.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="assets/css/fontawesome.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/css/animate.min.css">
+		<link rel="stylesheet" type="text/css" href="assets/css/style.css">
+			
+	</head>
+	
+	<body id="app">
+		<div id="loader" class="flex">
+			<i class="fa fa-pulse fa-spinner"></i>
+		</div>
+
+		<div id="all">
+			<header>
+			<nav>
+				<div class="skyall">
+					<div class="sky flex">
+						<i class="fa fa-info p snd2" @click="showInfoDialogue = true"></i>
+						<i class="fa fa-lightbulb-o p snd1" id="dark" @click="theme"></i>
+					</div>
+					
+					<div class="logo"><img src="assets/img/tailor.svg" width="115"></div>
+				</div>
+				
+					<div class="tops">
+						<div class="tops-holder flex">
+							<div class="add shad p snd2" @click="showAdd"><i class="fa fa-user-plus"></i></div>
+							
+							<div class="sch shad">
+								<input type="text" placeholder="Search Customer..." @keyup="search" id="sch"><i class="fa fa-search"></i>
+							</div>
+						</div>
+					</div>
+				</nav>
+				</header>
+
+				<!--<audio controls id="s1"><source src="assets/sound/s2.mp3" type="audio/mpeg"></audio>-->
+
+				<main>
+					<div class="shad open" v-if="!customer.length">
+						<i>Add Customers!</i>
+					</div>
+
+					<!--Home view. Customers list--->
+					<div class="customer-list" v-show="showCustomerList">
+						<transition-group tag="div" enter-active-class="animate__animated animate__bounceIn animate__faster">
+							<div class="list shad flex p snd2" v-for="custy in customer" :key="custy" :id="'id'+''+custy.random+''" @click="edit(custy.id,custy.name,custy.phone,custy.gender,custy.date,custy.time, custy.color,custy.random)">
+								
+								<div class="inf flex">
+									<div class="user" :class="'avatarColor'+''+custy.color+''">
+										<i class="fa fa-user-o"></i>
+									</div>
+									<div class="text">
+										<div class="name">{{ custy.name }}</div>
+										<div class="date">{{ custy.date }}</div>
+										<div class="date">{{ custy.gender }} - {{ custy.phone }}</div>
+									</div>
+								</div>
+								
+								<div class="act">
+									<div>#</div>
+								</div>
+								
+							</div>
+						</transition-group>
+					</div>
+
+
+
+					<!--Edit Customer--->
+					<transition enter-active-class="animate__animated animate__zoomIn animate__faster" leave-active-class="animate__animated animate__fadeOut animate__faster">	
+						<div class="edit-holder" v-show="showEdit">
+							<div class="edit shad">
+								
+								<div class="inf flex">
+										
+									<div class="text">
+											<div class="name">{{ editInfo.name }}</div>
+											<div class="date">{{ editInfo.date }}</div>
+											<div class="date">{{ editInfo.gender }} - <a :href="'tel: '+editInfo.phone+''" class="snd1"><i class="fa fa-phone"></i> {{ editInfo.phone }}</a></div>
+									</div>
+									
+									<div class="user" :class="'avatarColor'+''+editInfo.color+''" style="margin-right:0">
+										<i class="fa fa-user-o"></i>
+									</div>
+								</div>
+								
+
+								<div class="measure">
+									<div class="itm-head">Body Measurements</div>
+									
+									<div>
+										<div class="flex li" v-for="measure in activeMeasure" :key="measure">
+											<div @click="measure.showDel = !measure.showDel">{{ measure.name }} <button class="btn btnDel btnSm p snd1" v-if="measure.showDel" @click="activeMeasure.splice(measure.count, 1)">Remove</button></div>
+											<div class="sec"><input type="text" placeholder="__" v-model="measure.value" char-type="numeric" maxlength="3"></div>
+										</div>
+									</div>
+									
+									<transition
+										enter-active-class="animate__animated animate__bounceIn animate__faster"
+									>
+										<div class="addmea" v-show="showAddMeasure">
+											<div class="shad">
+												<input type="text" v-model="addMeasureInput" placeholder="Measurement name..">
+												<button class="btn btnOne p snd1" @click="addMeasure(editInfo.random)"><i class="fa fa-plus"></i></button>
+											</div>
+										</div>
+									</transition>
+									
+								</div>
+
+								
+								<div class="measure" style="border:0">
+									<div class="flex bt">
+										<button class="btn btnOne shad p snd1" type="button" @click="saveMeasure(editInfo.random)"><i class="fa fa-save"></i> Save <span v-show="showAlert"><i class="fa fa-check"></i></span></button>
+
+										<button class="btn btnTr shad p snd1" @click="showAddMeasure = !showAddMeasure"><i class="fa fa-plus"></i> Add</button>
+									</div>
+								</div>
+								
+							</div>
+
+							<div class="del">
+							  <button class="btn btnDel shad p snd2" @click="showDeleteDialogue = !showDeleteDialogue"><i class="fa fa-trash"></i> Remove Customer</button>
+							</div>
+						</div>
+					</transition>	
+				</main>
+
+
+
+
+				<!--Modal Dialogue for adding customers-->
+				<transition
+					enter-active-class="animate__animated animate__fadeIn animate__faster"
+					leave-active-class="animate__animated animate__fadeOut animate__faster"
+				>		
+					<div class="backdrop" v-show="showAddDialogue">
+						<transition
+							enter-active-class="animate__animated animate__zoomIn animate__faster"
+							leave-active-class="animate__animated animate__zoomOut animate__faster"
+						>
+							<div class="modal-dialogue shad" v-show="showAddDialogue">
+								<form @submit.prevent="">
+									<h4>Add a Customer</h4>
+									
+									<div class="field">
+										<input type="text" placeholder="Name" class="in" v-model="customerInput.name" minlength="2" maxlength="20" char-type="alpha">
+									</div>
+									
+									<div class="field">
+										<input type="text" placeholder="Phone No" class="in" v-model="customerInput.phone" char-type="numeric">
+									</div>
+									
+									<div class="field">
+										<select class="in" v-model="customerInput.gender">
+											<option value="">Select Gender</option>
+											<option value="Male">Male</option>
+											<option value="Female">Female</option>
+										</select>
+									</div>
+									
+									<div class="field">
+										<div class="flex">
+											<button class="btn btnOne shad p snd1" @click="addCustomer">Add</button>
+											<div class="btn btnTr shad p snd2" @click="showAddDialogue = false">Cancel</div>
+										</div>
+									</div>
+								</form>
+							</div>
+						</transition>
+					</div>
+				</transition>
+
+
+				<!--Modal Dialogue for delete customers-->
+				<transition
+					enter-active-class="animate__animated animate__fadeIn animate__faster"
+					leave-active-class="animate__animated animate__fadeOut animate__faster"
+				>		
+					<div class="backdrop" v-show="showDeleteDialogue">
+						<transition
+							enter-active-class="animate__animated animate__zoomIn animate__faster"
+							leave-active-class="animate__animated animate__zoomOut animate__faster"
+						>
+							<div class="modal-dialogue shad delete" v-show="showDeleteDialogue">
+								<p>You Sure to Delete?</p>
+								
+								<div class="">
+									<button class="btn btnDel shad p snd2" @click="deleteCustomer(editInfo.random)">Yes</button> 
+									<div class="btn btnTr shad p snd2" @click="showDeleteDialogue = false">Cancel</div>
+								</div>
+							</div>
+						</transition>
+					</div>
+				</transition>
+
+				<!--Modal Dialogue for app info-->
+				<transition
+					enter-active-class="animate__animated animate__fadeIn animate__faster"
+					leave-active-class="animate__animated animate__fadeOut animate__faster"
+				>		
+					<div class="backdrop" v-show="showInfoDialogue" @click.self="hideInfo">
+						<transition
+							enter-active-class="animate__animated animate__zoomIn animate__faster"
+							leave-active-class="animate__animated animate__zoomOut animate__faster"
+						>
+							<div class="modal-dialogue shad info" v-show="showInfoDialogue">
+								<div class="id"><img src="assets/img/tailor.svg" width="100"></div>
+								<div>TailorMobile is a digital solution for record keeping made for tailors to simplistically store and access the measurement infomation of their customers on their phones.</div>
+
+								<br/>
+								<div class="id"><b>Developed by ArtisticLogic</b></div>
+								<div class="id"><a href="https://artisticlogicmk.one" target="_blank" class="snd1"><i class="fa fa-globe"></i> artisticlogicmk.one</a></div>
+								<div class="id"><a href="mailto: mk.artisticlogic@gmail.com" class="snd1"><i class="fa fa-envelope"></i> mk.artisticlogic@gmail.com</a></div>
+								
+								<div class="dwn">
+									<br/>
+									<a href="https://tailormobile.artisticlogicmk.one/download/TailorMobile_v1.0.0.apk" download><button class="btn btnOne shad p snd1"><i class="fa fa-android"></i> Download App</button></a>
+								</div>
+
+							</div>
+						</transition>
+					</div>
+				</transition>
+				
+				
+				<!--floaters-->
+				<transition
+					enter-active-class="animate__animated animate__zoomIn animate__faster"
+					leave-active-class="animate__animated animate__zoomOut animate__faster"
+				>
+					<div class="bHome" v-if="showHomeBtn">
+						<button class="btn btnOne shad p snd1" @click="goHome"><i class="fa fa-home"></i></button>
+					</div>
+				</transition>
+
+				<br/>
+			</div>
+		</body>
+
+	<script src="assets/js/script.js"></script>
+	</body>
+</html>
