@@ -14,16 +14,28 @@ window.addEventListener('scroll', function() {
 	}
 })
 
+//handle click sounds
+let snd1 = new Audio("assets/sound/s1.mp3")
+let snd2 = new Audio("assets/sound/s2.mp3")
+
+function play1() {
+	snd1.play()
+	snd1.volume = 0.35
+}
+
+function play2() {
+	snd2.play()
+	snd2.volume = 0.35
+}
+
 $(document).ready(function() {
-	//handle click sounds
-	let snd1 = new Audio("assets/sound/s1.mp3")
-	let snd2 = new Audio("assets/sound/s2.mp3")
+
 	$('body').on('click', '.snd1', function(){	
-		snd1.play()
+		play1()
 	})
 
 	$('body').on('click', '.snd2', function(){
-		snd2.play()
+		play2()
 	})
 
 
@@ -48,6 +60,7 @@ $(document).ready(function() {
 	})
 })
 
+//if app has been viewed for the first time
 localStorage.setItem("isViewed", "1")
 
 //hide all logs
@@ -74,7 +87,9 @@ Vue.createApp({
 				gender: '',
 				id: ''
 			},
+
 			customer: [],
+
 			editInfo: [{
 				name: '',
 				phone: '',
@@ -84,8 +99,11 @@ Vue.createApp({
 				color: null,
 				random: null
 			}],
+
 			searchVal: '',
+
 			activeMeasure: [],
+
 			addMeasureInput: ''
 		}
 	},
@@ -118,12 +136,13 @@ Vue.createApp({
 			}
 
 			//first validate inputs
-			if(this.customerInput.name.length > 1 &&  this.customerInput.gender.length > 1) {
+			if(this.customerInput.name.length > 1 && this.customerInput.gender.length > 1) {
 
 				if(this.customer.push(newValues)) {
-					new Audio("assets/sound/s2.mp3").play()
+					play2()
 					this.customer = this.customer.sort((a,b) =>  b.time - a.time)
 					localStorage.setItem("customers", JSON.stringify(this.customer))
+					
 					//clear inputs
 					this.customerInput.name = ''
 					this.customerInput.phone = ''
@@ -136,7 +155,7 @@ Vue.createApp({
 					body.scrollTop = 0
 					this.showAddDialogue = false
 
-					//adding basic measurement data for user
+					//adding predefined measurement data for user
 					let basicMeasure = [
 						{ name: 'Shoulder', value: '', customer: elRand, id: Math.floor(Math.random() * 96385520845289352678), showDel: false, count: 0 },
 						{ name: 'Arm Length', value: '', customer: elRand, id: Math.floor(Math.random() * 96385520845289352678), showDel: false, count: 1 },
@@ -154,6 +173,7 @@ Vue.createApp({
 							tempMeasure.push(element)
 						})
 						
+						//convert to string then push to localstorage
 						localStorage.setItem("measurements"+elRand, JSON.stringify(tempMeasure))
 					}
 				}
@@ -193,7 +213,7 @@ Vue.createApp({
 
 		addMeasure(customerId) {
 			if(this.addMeasureInput.length > 0) {
-				let generateId = Math.floor(Math.random() * 96385520845289352678)//random unique <[*_*]> id for customer. hope soo...
+				let generateId = Math.floor(Math.random() * 96385520845289352678)//random unique <[*_*]> id for customer.
 
 				this.activeMeasure.push({
 					name: this.addMeasureInput,
@@ -243,11 +263,11 @@ Vue.createApp({
 
 			let val = $('#sch').val().toLowerCase()
 
-			if(val.length > 0) {
+			if (val.length > 0) {
 		      //iterate through all <customer list> elements
 		      $(".list").each(function (i) {
 		        //get contents of <customer list> and then lowerCase string to compare with lowerCase(d) search input
-		        if($(this).find('.name').html().toLowerCase().startsWith(val)) {
+		        if ($(this).find('.name').html().toLowerCase().startsWith(val)) {
 		          //if the contents of the current <customer list> matches with input value, get the id
 		          let id = $(this).attr("id")
 		          //then scroll to the <customer list> element
@@ -260,24 +280,25 @@ Vue.createApp({
 		      });
 		    } else {
 		    	//if input becomes empty scroll top
-		      body.scrollTop = 0;
+		    	body.scrollTop = 0;
 		    }
 		},
 
 
 		hideInfo() {
 			this.showInfoDialogue = false
-			new Audio("assets/sound/s2.mp3").play()
+			play2()
 		},
 
 
 		theme() {
-			if(body.classList.value == "" || body.classList.value == "light" || body.classList.value == "null") {
+			if (body.classList.value == "" || body.classList.value == "light" || body.classList.value == "null") {
 				body.className = ''
 				localStorage.setItem("theme", "dark")
 				body.classList.add("dark")
 			}
-			else if(body.classList.value == "dark") {
+			
+			else if (body.classList.value == "dark") {
 				body.className = ''
 				localStorage.setItem("theme", "light")
 				body.classList.add("light")
@@ -292,9 +313,9 @@ Vue.createApp({
 			//do nothing..
 		} else {
 			JSON.parse(localStorage.getItem("customers")).forEach((element) => {
-				//console.log(element)
 				this.customer.push(element)
 			})
 		}
+
 	}
 }).mount("#app")

@@ -7,20 +7,19 @@
 		<meta property="og:image" content="https://tailormobile.artisticlogicmk.one/assets/img/cover.png">
 		<title>TailorMobile</title>
 		<link rel="icon" href="assets/img/icon.png">
-
 		<script src="assets/js/jquery.min.js"></script>
 		<script src="assets/js/vue.min.js"></script>
 		<script src="assets/js/moment.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="assets/css/fontawesome.min.css">
 		<link rel="stylesheet" type="text/css" href="assets/css/animate.min.css">
-		<link rel="stylesheet" type="text/css" href="assets/css/style.css">
-			
+		<link rel="stylesheet" type="text/css" href="assets/css/style.css">	
 	</head>
 	
 	<body id="app">
 		<div id="loader" class="flex">
 			<i class="fa fa-pulse fa-spinner"></i>
 		</div>
+
 
 		<div id="all">
 			<header>
@@ -39,7 +38,8 @@
 							<div class="add shad p snd2" @click="showAdd"><i class="fa fa-user-plus"></i></div>
 							
 							<div class="sch shad">
-								<input type="text" placeholder="Search Customer..." @keyup="search" id="sch"><i class="fa fa-search"></i>
+								<input type="text" placeholder="Search Customer..." @keyup="search" id="sch">
+								<i class="fa fa-search"></i>
 							</div>
 						</div>
 					</div>
@@ -52,6 +52,7 @@
 					<div class="shad open" v-if="!customer.length">
 						<i>Add Customers!</i>
 					</div>
+
 
 					<!--Home view. Customers list--->
 					<div class="customer-list" v-show="showCustomerList">
@@ -161,7 +162,7 @@
 									</div>
 									
 									<div class="field">
-										<input type="text" placeholder="Phone No" class="in" v-model="customerInput.phone" char-type="numeric">
+										<input type="tel" placeholder="Phone No" class="in" v-model="customerInput.phone" char-type="numeric">
 									</div>
 									
 									<div class="field">
@@ -207,6 +208,7 @@
 					</div>
 				</transition>
 
+				
 				<!--Modal Dialogue for app info-->
 				<transition
 					enter-active-class="animate__animated animate__fadeIn animate__faster"
